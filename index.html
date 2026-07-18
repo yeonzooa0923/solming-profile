@@ -664,12 +664,12 @@
         // Firebase Configuration (솔밍님의 새 프로젝트 설정 완벽 동기화)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'solming-profile-app';
         const firebaseConfig = {
-            apiKey: "AIzaSyBNGifY2bP3YuP_807udUCNx3KKFAwwCbE",
-            authDomain: "solming-profile-db.firebaseapp.com",
-            projectId: "solming-profile-db",
-            storageBucket: "solming-profile-db.firebasestorage.app",
-            messagingSenderId: "1044060260456",
-            appId: "1:1044060260456:web:8f5d91e0e1a20d0673d3dd"
+            apiKey: "AIzaSyA-7RFaaBIxkdJpozbgN2vxF3Cw_C3uoiU",
+            authDomain: "solming-profile-db-5ebc8.firebaseapp.com",
+            projectId: "solming-profile-db-5ebc8",
+            storageBucket: "solming-profile-db-5ebc8.firebasestorage.app",
+            messagingSenderId: "144023412722",
+            appId: "1:144023412722:web:72ab8fda5ded2cfe3bd56b"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -1150,7 +1150,6 @@
         }
 
         // Render Solips Board (방셀 숙제 현황)
-        // 0개 숙제도 관리자 모드가 아닐 때 렌더링에 노출되도록 조정했습니다.
         function renderUpbo(data) {
             const grid = document.getElementById('upbo-grid');
             if (!grid) return;
@@ -1572,14 +1571,6 @@
             showToast(`보물 오르골에 "${title}" 신규 곡이 성공적으로 입고되었습니다! 🎵`);
         }
 
-        function deleteSong(index) {
-            const deletedTitle = globalSongsData[index].title;
-            globalSongsData.splice(index, 1);
-            updateFirestore('songs', globalSongsData);
-            renderSongList();
-            showToast(`"${deletedTitle}" 곡이 리스트에서 완전 삭제되었습니다.`);
-        }
-
         // Profile modification center
         function openProfileEditModal() {
             const modal = document.getElementById('profile-edit-modal');
@@ -1685,6 +1676,14 @@
             renderProfile(); 
             closeProfileEditModal();
             showToast("솔밍의 대표 정보들이 정상 수정되었습니다. 💗");
+        }
+
+        function deleteSong(index) {
+            const deletedTitle = globalSongsData[index].title;
+            globalSongsData.splice(index, 1);
+            updateFirestore('songs', globalSongsData);
+            renderSongList();
+            showToast(`"${deletedTitle}" 곡이 리스트에서 완전 삭제되었습니다.`);
         }
 
         // Map elements to window so HTML triggers are resolved correctly
