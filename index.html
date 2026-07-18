@@ -669,15 +669,15 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase Configuration Guardrail Match
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ondana-profile-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyDfENiDlG1wSM4vOEHlahphQWOJWGirzwE",
-            authDomain: "mochi-profile-db.firebaseapp.com",
-            projectId: "mochi-profile-db",
-            storageBucket: "mochi-profile-db.firebasestorage.app",
-            messagingSenderId: "337455271802",
-            appId: "1:337455271802:web:9dc6e18fb2524e02abd0c3"
+        // Firebase Configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'solming-profile-app';
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNGifY2bP3YuP_807udUCNx3KKFAwwCbE",
+            authDomain: "solming-profile-db.firebaseapp.com",
+            projectId: "solming-profile-db",
+            storageBucket: "solming-profile-db.firebasestorage.app",
+            messagingSenderId: "1044060260456",
+            appId: "1:1044060260456:web:1c7b177aada537ff73d3dd"
         };
 
         const app = initializeApp(firebaseConfig);
