@@ -558,7 +558,7 @@
             </div>
         </div>
 
-        <!-- Profile Detail Edit Modal -->
+        <!-- Profile Detail Edit Modal (업로드 기능 적용) -->
         <div id="profile-edit-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
             <div class="bg-white dark:bg-[#1c1416] rounded-2xl shadow-2xl w-11/12 max-w-lg overflow-hidden transform scale-95 transition-transform duration-300 border border-rose-100/50 dark:border-pink-950/40 flex flex-col max-h-[90vh]">
                 <div class="p-4 flex items-center justify-between border-b border-rose-50 dark:border-pink-950/30 bg-brand-light/30 dark:bg-pink-950/20">
@@ -575,7 +575,7 @@
                         
                         <!-- Drag-and-drop Image Area -->
                         <div class="mb-3">
-                            <label class="block text-xs text-gray-500 mb-2 font-bold">배너 이미지 직접 파일 업로드 (고화질 드로잉 인코딩 지원)</label>
+                            <label class="block text-xs text-gray-500 mb-2 font-bold">배너 이미지 직접 파일 업로드 (고화질 최적 인코딩 지원)</label>
                             <div id="banner-dropzone" class="border-2 border-dashed border-rose-300 dark:border-pink-900 bg-rose-50/10 dark:bg-pink-950/10 rounded-2xl p-4 text-center cursor-pointer hover:bg-rose-50/20 hover:border-brand transition-all relative flex flex-col items-center justify-center min-h-[120px]">
                                 <input type="file" id="edit-profile-banner-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                                 <div id="banner-upload-prompt" class="space-y-1">
@@ -592,8 +592,7 @@
                             </div>
                         </div>
 
-                        <label class="block text-gray-400 mb-1.5">또는 배너 이미지 웹주소(URL) 직접 입력</label>
-                        <input type="text" id="edit-profile-banner" class="w-full bg-rose-50/10 dark:bg-pink-950/10 border border-rose-100 dark:border-pink-950 text-gray-950 dark:text-pink-100 rounded-xl focus:ring-1 focus:ring-brand p-3 outline-none" placeholder="이미지 주소를 복사해 넣어주세요">
+                        <input type="hidden" id="edit-profile-banner">
                     </div>
                     <hr class="border-rose-50 dark:border-pink-950/30">
 
@@ -702,7 +701,7 @@
         const defaultUpboData = [
             { id: 'solip_1', nickname: '별빛솔잎', items: [{ name: 'A4 자필 편지 방셀', count: 1 }, { name: '노래 1곡 선택권', count: 2 }] },
             { id: 'solip_2', nickname: '아침이슬', items: [{ name: '모닝콜 녹음 보이스', count: 1 }] },
-            { id: '', nickname: '달콤한밤', items: [{ name: 'ASMR 꿀잠 보이스', count: 1 }] } // 프사 없음 -> 하트 💗
+            { id: '', nickname: '달콤한밤', items: [{ name: 'ASMR 꿀잠 보이스', count: 1 }] } // 빈 아이디는 💗로 렌더링됨
         ];
         
         const defaultNoticeData = [
@@ -781,8 +780,8 @@
                         let width = img.width;
                         let height = img.height;
                         
-                        // 고화질 유지를 위해 가로 해상도 한도를 최대 1920px로 지정
-                        const maxDimension = 1920;
+                        // 고화질 유지를 위해 가로 해상도 한도를 최대 1200px로 지정하여 Firestore 1MB제한 대응
+                        const maxDimension = 1200;
                         if (width > maxDimension || height > maxDimension) {
                             if (width > height) {
                                 height = Math.round((height * maxDimension) / width);
@@ -803,8 +802,8 @@
                         
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // 0.92의 품질 압축 변환으로 깨짐 방지 및 최상급 화질 확보
-                        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                        // JPEG 포맷에 0.8 품질로 최적 배런싱하여 인코딩
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
                         resolve(dataUrl);
                     };
                     img.onerror = (err) => reject(err);
@@ -871,9 +870,6 @@
                 prompt.classList.add('hidden');
                 preview.classList.remove('hidden');
                 
-                // 텍스트 필드 자동 대치
-                document.getElementById('edit-profile-banner').value = '[직접 업로드 완료]';
-                
                 showToast("배너 이미지가 최상의 화질로 셋업되었습니다! ✨");
             } catch (err) {
                 console.error("Image processing error: ", err);
@@ -886,10 +882,13 @@
 
         function clearUploadedBanner() {
             uploadedBannerBase64 = null;
-            document.getElementById('edit-profile-banner-file').value = '';
-            document.getElementById('edit-profile-banner').value = '';
-            document.getElementById('banner-upload-prompt').classList.remove('hidden');
-            document.getElementById('banner-upload-preview').classList.add('hidden');
+            const fileInput = document.getElementById('edit-profile-banner-file');
+            if (fileInput) fileInput.value = '';
+            
+            const prompt = document.getElementById('banner-upload-prompt');
+            const preview = document.getElementById('banner-upload-preview');
+            if (prompt) prompt.classList.remove('hidden');
+            if (preview) preview.classList.add('hidden');
         }
 
         // Local Storage Utilities
@@ -1292,12 +1291,13 @@
         }
 
         // Return SOOP/Afreeca style Avatar URL or placeholder
+        // SOOP 아이디가 공백이거나 'solip_' 형식인 경우 빈 값으로 반환하여 하트 💗 이모지가 활성화되도록 유도
         function getAvatarUrl(user) {
             if (user.id && user.id.trim() !== '' && !user.id.startsWith('solip_')) {
                 const prefix = user.id.substring(0, 2);
                 return `https://stimg.afreecatv.com/LOGO/${prefix}/${user.id}/${user.id}.jpg`;
             }
-            return ''; // 아이디가 비어있거나 무작위 생성 임시 ID면 공백 반환 (💗 렌더링 지시)
+            return ''; 
         }
 
         // Render Solips Board (방셀 숙제 현황)
@@ -1316,7 +1316,7 @@
                 card.onclick = () => { if (isAdminMode) openUpboEditModal(user, avatarUrl); else openUpboModal(user, avatarUrl); };
                 const adminBadge = isAdminMode ? `<div class="absolute top-2.5 right-2.5 text-pink-400 group-hover:text-brand transition-colors"><i class="fa-solid fa-pen-to-square text-xs"></i></div>` : '';
 
-                // 아바타 렌더러 분기 처리 (아이디가 빈 경우 💗 이모지로 교체 적용)
+                // 아바타 분기: 사진이 없는 경우 💗 이모지로 예쁘게 장식
                 let avatarHtml = '';
                 if (avatarUrl) {
                     avatarHtml = `<img src="${avatarUrl}" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-14 h-14 rounded-full bg-rose-50 dark:bg-pink-950/30 border-2 border-rose-150 dark:border-pink-900 flex items-center justify-center text-2xl mb-2.5 shadow-xs\\'>💗</div>';" alt="${user.nickname}" class="w-14 h-14 rounded-full object-cover mb-2.5 shadow-xs border-2 border-rose-100/60 dark:border-pink-950/40 bg-white">`;
@@ -1348,7 +1348,6 @@
                 </div>
             `).join('') : `<div class="text-center text-gray-400 py-6 font-bold">남은 방셀 숙제가 없습니다! 깨끗해요 ✨</div>`;
 
-            // 아바타 렌더러 분기 처리 (아이디가 빈 경우 💗 이모지 적용)
             let headerAvatarHtml = '';
             if (avatarUrl) {
                 headerAvatarHtml = `<img src="${avatarUrl}" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-10 h-10 rounded-full bg-rose-50 dark:bg-pink-950/30 border border-rose-100 flex items-center justify-center text-lg shadow-xs\\'>💗</div>';" class="w-10 h-10 rounded-full border border-rose-100 object-cover bg-white">`;
@@ -1510,7 +1509,6 @@
             currentEditingUserId = user.id; 
             const modal = document.getElementById('upbo-edit-modal');
             
-            // 에디터 헤더 💗 하트 대체 렌더러 적용
             let editHeaderAvatarHtml = '';
             if (avatarUrl) {
                 editHeaderAvatarHtml = `<img src="${avatarUrl}" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-10 h-10 rounded-full bg-rose-50 dark:bg-pink-950/30 border border-rose-200 flex items-center justify-center text-lg shadow-xs\\'>💗</div>';" class="w-10 h-10 rounded-full border border-rose-200 object-cover bg-white">`;
@@ -1750,7 +1748,7 @@
         function openProfileEditModal() {
             const modal = document.getElementById('profile-edit-modal');
             
-            // 기존 직접 업로드 캐시 비우기
+            // 직접 업로드 캐시 초기화
             clearUploadedBanner();
 
             document.getElementById('edit-profile-banner').value = globalProfileData.bannerUrl || defaultProfileData.bannerUrl || '';
@@ -1770,6 +1768,16 @@
             }
 
             renderEditDdays();
+
+            // 만약 기존 배너가 base64 형식이면 미리보기 노출
+            const preview = document.getElementById('banner-upload-preview');
+            const previewImg = document.getElementById('banner-preview-img');
+            const prompt = document.getElementById('banner-upload-prompt');
+            if (globalProfileData.bannerUrl && globalProfileData.bannerUrl.startsWith('data:image')) {
+                previewImg.src = globalProfileData.bannerUrl;
+                prompt.classList.add('hidden');
+                preview.classList.remove('hidden');
+            }
 
             requestAnimationFrame(() => { 
                 modal.classList.remove('opacity-0', 'pointer-events-none'); 
@@ -1822,11 +1830,9 @@
         function saveProfileChanges() {
             const parse = (str) => str.split(',').map(item => item.trim()).filter(item => item !== '');
             
-            // 직접 업로드된 베이스64 배너가 있다면 최우선 적용, 없다면 입력 텍스트 링크 사용
+            // 직접 업로드된 베이스64 배너가 있다면 세팅
             if (uploadedBannerBase64) {
                 globalProfileData.bannerUrl = uploadedBannerBase64;
-            } else {
-                globalProfileData.bannerUrl = document.getElementById('edit-profile-banner').value.trim();
             }
 
             globalProfileData.introText = document.getElementById('edit-profile-intro').value; 
