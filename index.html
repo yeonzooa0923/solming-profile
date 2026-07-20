@@ -6,7 +6,7 @@
     <title>솔밍 프로필 💕</title>
     
     <!-- 브라우저 탭 아이콘 (파비콘) - 솔밍님의 상큼한 핑크 하트 테마 -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+    <link id="favicon-link" class="rounded-full" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -143,7 +143,7 @@
             <!-- Hero Header Card -->
             <div class="bg-white dark:bg-[#1c1416] rounded-3xl shadow-sm border border-rose-100/60 dark:border-pink-950/40 overflow-hidden transition-colors duration-300">
                 <!-- Cover Banner with Pink Hue Gradation -->
-                <div class="h-32 sm:h-48 w-full relative overflow-hidden bg-gradient-to-r from-brand-light via-white to-pink-100 dark:from-pink-950/30 dark:to-rose-950/20">
+                <div class="h-32 sm:h-52 w-full relative overflow-hidden bg-gradient-to-r from-brand-light via-white to-pink-100 dark:from-pink-950/30 dark:to-rose-950/20">
                     <img id="profile-banner-img" src="" 
                          onerror="this.src='https://placehold.co/1200x400/fff1f2/f472b6?text=Solming+💕'" 
                          class="w-full h-full object-cover absolute inset-0" alt="솔밍 배너">
@@ -153,7 +153,7 @@
                 <div class="px-6 sm:px-8 pb-6 flex flex-col sm:flex-row relative">
                     <!-- Avatar Area -->
                     <div class="-mt-16 sm:-mt-24 mb-4 sm:mb-0 sm:mr-6 flex-shrink-0 flex justify-center sm:block relative z-10">
-                        <img class="h-32 w-32 sm:h-40 sm:w-40 rounded-full border-4 border-white dark:border-[#1c1416] shadow-md object-cover bg-rose-50 dark:bg-pink-950/30 hover:scale-105 transition-transform duration-350" 
+                        <img id="avatar-display" class="h-32 w-32 sm:h-40 sm:w-40 rounded-full border-4 border-white dark:border-[#1c1416] shadow-md object-cover bg-rose-50 dark:bg-pink-950/30 hover:scale-105 transition-transform duration-350" 
                              src="https://stimg.afreecatv.com/LOGO/on/ondana/ondana.jpg" 
                              onerror="this.src='https://placehold.co/400x400/ffe4e6/db2777?text=Solming'" 
                              alt="솔밍 아바타">
@@ -567,10 +567,32 @@
                 </div>
                 
                 <div class="p-5 flex-grow overflow-y-auto space-y-6 text-xs font-bold">
-                    <!-- Banner Cover Setting -->
+                    <!-- Banner Cover Setting with Drag-and-drop Image Area -->
                     <div>
-                        <h4 class="text-sm text-gray-900 dark:text-white mb-2"><i class="fa-regular fa-image text-brand mr-1"></i> 대표 아트 배너</h4>
-                        <label class="block text-gray-400 mb-1.5">상단 커버용 URL 이미지</label>
+                        <h4 class="text-sm text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                            <i class="fa-regular fa-image text-brand"></i> 대표 아트 배너 설정
+                        </h4>
+                        
+                        <!-- Drag-and-drop Image Area -->
+                        <div class="mb-3">
+                            <label class="block text-xs text-gray-500 mb-2 font-bold">배너 이미지 직접 파일 업로드 (고화질 드로잉 인코딩 지원)</label>
+                            <div id="banner-dropzone" class="border-2 border-dashed border-rose-300 dark:border-pink-900 bg-rose-50/10 dark:bg-pink-950/10 rounded-2xl p-4 text-center cursor-pointer hover:bg-rose-50/20 hover:border-brand transition-all relative flex flex-col items-center justify-center min-h-[120px]">
+                                <input type="file" id="edit-profile-banner-file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                                <div id="banner-upload-prompt" class="space-y-1">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#f472b6] dark:text-pink-400"></i>
+                                    <p class="text-sm text-gray-600 dark:text-pink-200">여기로 이미지 파일을 끌어다 놓거나 클릭하세요.</p>
+                                    <p class="text-[10px] text-gray-400">JPG, PNG, WEBP (고해상도로 완벽 변환됩니다)</p>
+                                </div>
+                                <div id="banner-upload-preview" class="hidden w-full flex-col items-center gap-2">
+                                    <img id="banner-preview-img" src="" class="h-20 w-auto rounded-lg object-cover border border-rose-200">
+                                    <button type="button" onclick="clearUploadedBanner()" class="text-xs bg-red-50 text-red-600 px-2.5 py-1 rounded-lg hover:bg-red-100 transition-colors font-bold">
+                                        <i class="fa-solid fa-trash mr-1"></i> 파일 취소
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="block text-gray-400 mb-1.5">또는 배너 이미지 웹주소(URL) 직접 입력</label>
                         <input type="text" id="edit-profile-banner" class="w-full bg-rose-50/10 dark:bg-pink-950/10 border border-rose-100 dark:border-pink-950 text-gray-950 dark:text-pink-100 rounded-xl focus:ring-1 focus:ring-brand p-3 outline-none" placeholder="이미지 주소를 복사해 넣어주세요">
                     </div>
                     <hr class="border-rose-50 dark:border-pink-950/30">
@@ -635,7 +657,7 @@
                 </div>
                 <div class="p-4 border-t border-rose-50 dark:border-pink-950/30 bg-rose-50/20 dark:bg-[#251b1d] flex justify-end gap-2 text-xs font-bold">
                     <button onclick="closeProfileEditModal()" class="px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-pink-950/30 text-gray-600 dark:text-pink-200 hover:bg-gray-250 transition-colors">취소</button>
-                    <button onclick="saveProfileChanges()" class="bg-brand text-white px-6 py-2.5 rounded-xl hover:bg-brand-dark transition-colors">저장 완료</button>
+                    <button id="save-profile-btn" onclick="saveProfileChanges()" class="bg-brand text-white px-6 py-2.5 rounded-xl hover:bg-brand-dark transition-colors">저장 완료</button>
                 </div>
             </div>
         </div>
@@ -680,7 +702,7 @@
         const defaultUpboData = [
             { id: 'solip_1', nickname: '별빛솔잎', items: [{ name: 'A4 자필 편지 방셀', count: 1 }, { name: '노래 1곡 선택권', count: 2 }] },
             { id: 'solip_2', nickname: '아침이슬', items: [{ name: '모닝콜 녹음 보이스', count: 1 }] },
-            { id: 'solip_3', nickname: '달콤한밤', items: [{ name: 'ASMR 꿀잠 보이스', count: 1 }] }
+            { id: '', nickname: '달콤한밤', items: [{ name: 'ASMR 꿀잠 보이스', count: 1 }] } // 프사 없음 -> 하트 💗
         ];
         
         const defaultNoticeData = [
@@ -742,6 +764,133 @@
         let currentEditingUserId = null;
         let deleteConfirmState = false; 
         let currentSelectedGenre = '전체';
+
+        // 직접 업로드된 배너 base64 홀딩 변수
+        let uploadedBannerBase64 = null;
+
+        // 고해상도 고품질 이미지 리사이징 가공 가속 헬퍼 (배너 직접 업로드 시 Firestore 용량 최적화)
+        function processHighResolutionImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // 고화질 유지를 위해 가로 해상도 한도를 최대 1920px로 지정
+                        const maxDimension = 1920;
+                        if (width > maxDimension || height > maxDimension) {
+                            if (width > height) {
+                                height = Math.round((height * maxDimension) / width);
+                                width = maxDimension;
+                            } else {
+                                width = Math.round((width * maxDimension) / height);
+                                height = maxDimension;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // 이미지 스무딩 품질 최상으로 지정
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // 0.92의 품질 압축 변환으로 깨짐 방지 및 최상급 화질 확보
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+                        resolve(dataUrl);
+                    };
+                    img.onerror = (err) => reject(err);
+                };
+                reader.onerror = (err) => reject(err);
+            });
+        }
+
+        // 배너 직접 업로드 파일 체인지 및 드래그앤드롭 이벤트 바인딩
+        function initBannerUploadEvents() {
+            const fileInput = document.getElementById('edit-profile-banner-file');
+            const dropzone = document.getElementById('banner-dropzone');
+            
+            if (!fileInput || !dropzone) return;
+
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    await handleBannerFile(file);
+                }
+            });
+
+            // 드래그 앤 드롭 효과 바인딩
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('border-brand', 'bg-rose-50/20');
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('border-brand', 'bg-rose-50/20');
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', async (e) => {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    await handleBannerFile(file);
+                }
+            });
+        }
+
+        async function handleBannerFile(file) {
+            const prompt = document.getElementById('banner-upload-prompt');
+            const preview = document.getElementById('banner-upload-preview');
+            const previewImg = document.getElementById('banner-preview-img');
+            const saveBtn = document.getElementById('save-profile-btn');
+            
+            if (!previewImg || !preview || !prompt || !saveBtn) return;
+
+            try {
+                saveBtn.disabled = true;
+                saveBtn.innerText = '이미지 처리 중...';
+                
+                // 최상급 리사이즈 후 64비트 변환
+                const optimizedBase64 = await processHighResolutionImage(file);
+                uploadedBannerBase64 = optimizedBase64;
+                
+                previewImg.src = optimizedBase64;
+                prompt.classList.add('hidden');
+                preview.classList.remove('hidden');
+                
+                // 텍스트 필드 자동 대치
+                document.getElementById('edit-profile-banner').value = '[직접 업로드 완료]';
+                
+                showToast("배너 이미지가 최상의 화질로 셋업되었습니다! ✨");
+            } catch (err) {
+                console.error("Image processing error: ", err);
+                showToast("이미지 인코딩 과정 중 오류가 일어났습니다.");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = '저장 완료';
+            }
+        }
+
+        function clearUploadedBanner() {
+            uploadedBannerBase64 = null;
+            document.getElementById('edit-profile-banner-file').value = '';
+            document.getElementById('edit-profile-banner').value = '';
+            document.getElementById('banner-upload-prompt').classList.remove('hidden');
+            document.getElementById('banner-upload-preview').classList.add('hidden');
+        }
 
         // Local Storage Utilities
         function safeGetStorage(key, defaultValue) {
@@ -920,6 +1069,9 @@
             renderNotice();
             renderSchedule();
             renderSongList();
+
+            // 파일 직접 업로드 이벤트 이니셜라이징
+            initBannerUploadEvents();
         });
 
         // Background Heart Particles Generator for Solming's pink signature
@@ -1141,12 +1293,11 @@
 
         // Return SOOP/Afreeca style Avatar URL or placeholder
         function getAvatarUrl(user) {
-            if (user.id && user.id.trim() !== '') {
+            if (user.id && user.id.trim() !== '' && !user.id.startsWith('solip_')) {
                 const prefix = user.id.substring(0, 2);
                 return `https://stimg.afreecatv.com/LOGO/${prefix}/${user.id}/${user.id}.jpg`;
             }
-            const safeName = user.nickname.length >= 2 ? user.nickname.substring(0,2) : user.nickname;
-            return `https://placehold.co/100x100/ffe4e6/db2777?text=${encodeURIComponent(safeName)}`;
+            return ''; // 아이디가 비어있거나 무작위 생성 임시 ID면 공백 반환 (💗 렌더링 지시)
         }
 
         // Render Solips Board (방셀 숙제 현황)
@@ -1165,9 +1316,17 @@
                 card.onclick = () => { if (isAdminMode) openUpboEditModal(user, avatarUrl); else openUpboModal(user, avatarUrl); };
                 const adminBadge = isAdminMode ? `<div class="absolute top-2.5 right-2.5 text-pink-400 group-hover:text-brand transition-colors"><i class="fa-solid fa-pen-to-square text-xs"></i></div>` : '';
 
+                // 아바타 렌더러 분기 처리 (아이디가 빈 경우 💗 이모지로 교체 적용)
+                let avatarHtml = '';
+                if (avatarUrl) {
+                    avatarHtml = `<img src="${avatarUrl}" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-14 h-14 rounded-full bg-rose-50 dark:bg-pink-950/30 border-2 border-rose-150 dark:border-pink-900 flex items-center justify-center text-2xl mb-2.5 shadow-xs\\'>💗</div>';" alt="${user.nickname}" class="w-14 h-14 rounded-full object-cover mb-2.5 shadow-xs border-2 border-rose-100/60 dark:border-pink-950/40 bg-white">`;
+                } else {
+                    avatarHtml = `<div class="w-14 h-14 rounded-full bg-rose-50 dark:bg-pink-950/30 border-2 border-rose-150 dark:border-pink-900 flex items-center justify-center text-2xl mb-2.5 shadow-xs">💗</div>`;
+                }
+
                 card.innerHTML = `
                     ${adminBadge}
-                    <img src="${avatarUrl}" onerror="this.src='https://placehold.co/100x100/ffe4e6/db2777?text=${encodeURIComponent(user.nickname.substring(0,2))}'" alt="${user.nickname}" class="w-14 h-14 rounded-full object-cover mb-2.5 shadow-xs border-2 border-rose-100/60 dark:border-pink-950/40 bg-white">
+                    ${avatarHtml}
                     <div class="text-[#3d2427] dark:text-pink-100 font-bold text-sm mb-2.5 truncate w-full text-center">${user.nickname}</div>
                     <div class="bg-brand text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-xs">숙제 ${totalItems}개</div>
                 `;
@@ -1189,11 +1348,19 @@
                 </div>
             `).join('') : `<div class="text-center text-gray-400 py-6 font-bold">남은 방셀 숙제가 없습니다! 깨끗해요 ✨</div>`;
 
+            // 아바타 렌더러 분기 처리 (아이디가 빈 경우 💗 이모지 적용)
+            let headerAvatarHtml = '';
+            if (avatarUrl) {
+                headerAvatarHtml = `<img src="${avatarUrl}" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-10 h-10 rounded-full bg-rose-50 dark:bg-pink-950/30 border border-rose-100 flex items-center justify-center text-lg shadow-xs\\'>💗</div>';" class="w-10 h-10 rounded-full border border-rose-100 object-cover bg-white">`;
+            } else {
+                headerAvatarHtml = `<div class="w-10 h-10 rounded-full bg-rose-50 dark:bg-pink-950/30 border border-rose-100 flex items-center justify-center text-lg shadow-xs">💗</div>`;
+            }
+
             modal.innerHTML = `
                 <div class="bg-white dark:bg-[#1c1416] rounded-2xl shadow-2xl w-11/12 max-w-sm overflow-hidden transform scale-95 transition-transform duration-300 border border-rose-100/50 dark:border-pink-950/40">
                     <div class="p-4 flex items-center justify-between border-b border-rose-50 dark:border-pink-950/30 bg-[#fffcfd] dark:bg-[#120e0f]">
                         <div class="flex items-center gap-2.5">
-                            <img src="${avatarUrl}" onerror="this.src='https://placehold.co/100x100/ffe4e6/db2777?text=${user.nickname.substring(0,2)}'" class="w-10 h-10 rounded-full border border-rose-100 object-cover bg-white">
+                            ${headerAvatarHtml}
                             <div>
                                 <div class="text-gray-900 dark:text-white font-bold text-sm">${user.nickname}</div>
                                 <div class="text-gray-400 text-[10px] font-bold">(${user.id || '아이디 없음'})</div>
@@ -1343,8 +1510,16 @@
             currentEditingUserId = user.id; 
             const modal = document.getElementById('upbo-edit-modal');
             
+            // 에디터 헤더 💗 하트 대체 렌더러 적용
+            let editHeaderAvatarHtml = '';
+            if (avatarUrl) {
+                editHeaderAvatarHtml = `<img src="${avatarUrl}" onerror="this.onerror=null; this.outerHTML='<div class=\\'w-10 h-10 rounded-full bg-rose-50 dark:bg-pink-950/30 border border-rose-200 flex items-center justify-center text-lg shadow-xs\\'>💗</div>';" class="w-10 h-10 rounded-full border border-rose-200 object-cover bg-white">`;
+            } else {
+                editHeaderAvatarHtml = `<div class="w-10 h-10 rounded-full bg-rose-50 dark:bg-pink-950/30 border border-rose-200 flex items-center justify-center text-lg shadow-xs">💗</div>`;
+            }
+
             document.getElementById('edit-modal-header').innerHTML = `
-                <img src="${avatarUrl}" onerror="this.src='https://placehold.co/100x100/ffe4e6/db2777?text=${user.nickname.substring(0,2)}'" class="w-10 h-10 rounded-full border border-rose-200 object-cover bg-white">
+                ${editHeaderAvatarHtml}
                 <div>
                     <div class="text-gray-900 dark:text-white font-bold text-sm">
                         ${user.nickname} 
@@ -1575,6 +1750,9 @@
         function openProfileEditModal() {
             const modal = document.getElementById('profile-edit-modal');
             
+            // 기존 직접 업로드 캐시 비우기
+            clearUploadedBanner();
+
             document.getElementById('edit-profile-banner').value = globalProfileData.bannerUrl || defaultProfileData.bannerUrl || '';
             document.getElementById('edit-profile-intro').value = globalProfileData.introText || ''; 
             document.getElementById('edit-profile-tags').value = (globalProfileData.tags || []).join(', ');
@@ -1644,7 +1822,13 @@
         function saveProfileChanges() {
             const parse = (str) => str.split(',').map(item => item.trim()).filter(item => item !== '');
             
-            globalProfileData.bannerUrl = document.getElementById('edit-profile-banner').value.trim();
+            // 직접 업로드된 베이스64 배너가 있다면 최우선 적용, 없다면 입력 텍스트 링크 사용
+            if (uploadedBannerBase64) {
+                globalProfileData.bannerUrl = uploadedBannerBase64;
+            } else {
+                globalProfileData.bannerUrl = document.getElementById('edit-profile-banner').value.trim();
+            }
+
             globalProfileData.introText = document.getElementById('edit-profile-intro').value; 
             globalProfileData.tags = parse(document.getElementById('edit-profile-tags').value);
             
@@ -1719,6 +1903,7 @@
         window.closeAddSongModal = closeAddSongModal;
         window.submitNewSong = submitNewSong;
         window.deleteSong = deleteSong;
+        window.clearUploadedBanner = clearUploadedBanner;
     </script>
 </body>
 </html>
